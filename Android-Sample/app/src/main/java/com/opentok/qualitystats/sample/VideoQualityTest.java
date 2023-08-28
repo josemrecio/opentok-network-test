@@ -1,13 +1,10 @@
 package com.opentok.qualitystats.sample;
 
 
-import android.Manifest;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
-
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.opentok.android.OpentokError;
@@ -38,17 +35,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
-import pub.devrel.easypermissions.AfterPermissionGranted;
-import pub.devrel.easypermissions.AppSettingsDialog;
-import pub.devrel.easypermissions.EasyPermissions;
-
 public class VideoQualityTest extends AppCompatActivity
-        implements SessionListener, PublisherKit.PublisherListener, SubscriberKit.SubscriberListener,
-        EasyPermissions.PermissionCallbacks {
+        implements SessionListener, PublisherKit.PublisherListener, SubscriberKit.SubscriberListener {
 
     private static final String LOGTAG = "quality-stats";
-    private static final int RC_VIDEO_APP_PERM = 124;
-    private static final int RC_SETTINGS_SCREEN_PERM = 123;
     private static final int TIME_WINDOW = 1;
     private final Handler mHandler = new Handler();
     private final Queue<SubscriberKit.SubscriberVideoStats> videoStatsQueue = new LinkedList<>();
@@ -102,47 +92,6 @@ public class VideoQualityTest extends AppCompatActivity
     @Override
     public void onPause() {
         super.onPause();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
-
-    @Override
-    public void onPermissionsGranted(int requestCode, List<String> perms) {
-
-        Log.d(LOGTAG, "onPermissionsGranted:" + requestCode + ":" + perms.size());
-    }
-
-    @Override
-    public void onPermissionsDenied(int requestCode, List<String> perms) {
-
-        Log.d(LOGTAG, "onPermissionsDenied:" + requestCode + ":" + perms.size());
-
-        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
-            new AppSettingsDialog.Builder(this)
-                    .setTitle(getString(R.string.title_settings_dialog))
-                    .setRationale(getString(R.string.rationale_ask_again))
-                    .setPositiveButton(getString(R.string.setting))
-                    .setNegativeButton(getString(R.string.cancel))
-                    .setRequestCode(RC_SETTINGS_SCREEN_PERM)
-                    .build()
-                    .show();
-        }
-    }
-
-    @AfterPermissionGranted(RC_VIDEO_APP_PERM)
-    private void requestPermissions() {
-
-        String[] perms = {Manifest.permission.INTERNET, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO};
-        if (EasyPermissions.hasPermissions(this, perms)) {
-            sessionConnect();
-        } else {
-            EasyPermissions.requestPermissions(this, getString(R.string.rationale_video_app), RC_VIDEO_APP_PERM, perms);
-        }
     }
 
     public void sessionConnect() {
